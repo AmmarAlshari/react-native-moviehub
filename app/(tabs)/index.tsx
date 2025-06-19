@@ -9,7 +9,9 @@ export default function Index() {
         alignItems: "center",
       }}
     >
-      <Text className="text-4xl text-primary font-bold">Welcome to moive App</Text>
+      <Text className="text-4xl text-primary font-bold">
+        Welcome to moive App
+      </Text>
     </View>
   );
 }
