@@ -25,7 +25,7 @@ const search = () => {
       } else {
         reset;
       }
-    }, 600);
+    }, 1000);
     return () => clearTimeout(timeoutId);
   }, [searchQuery]);
 
