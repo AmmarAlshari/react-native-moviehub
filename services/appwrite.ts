@@ -138,3 +138,87 @@ export const signOut = async () => {
     throw error;
   }
 };
+
+export const saveMovieForUser = async (
+  userId: string,
+  movieId: string,
+  moviePosterUrl: string
+) => {
+  try {
+    await databases.createDocument(
+      DATABASE_ID,
+      COLLECTION_ID_SAVED_MOVIES,
+      ID.unique(),
+      {
+        user_id: userId,
+        movie_id: movieId,
+        movie_poster_url: moviePosterUrl,
+      }
+    );
+    return true;
+  } catch (error) {
+    console.error("Error saving movie for user:", error);
+    throw error;
+  }
+};
+
+export const isMovieSavedForUser = async (userId: string, movieId: string) => {
+  try {
+    const result = await databases.listDocuments(
+      DATABASE_ID,
+      COLLECTION_ID_SAVED_MOVIES,
+      [
+        Query.equal("user_id", userId),
+        Query.equal("movie_id", movieId),
+        Query.limit(1),
+      ]
+    );
+    return result.documents.length > 0;
+  } catch (error) {
+    console.error("Error checking if movie is saved:", error);
+    return false;
+  }
+};
+
+export const getSavedMoviesForUser = async (userId: string) => {
+  try {
+    const result = await databases.listDocuments(
+      DATABASE_ID,
+      COLLECTION_ID_SAVED_MOVIES,
+      [Query.equal("user_id", userId)]
+    );
+    return result.documents;
+  } catch (error) {
+    console.error("Error fetching saved movies for user:", error);
+    return [];
+  }
+};
+
+export const removeSavedMovieForUser = async (
+  userId: string,
+  movieId: string
+) => {
+  try {
+    const result = await databases.listDocuments(
+      DATABASE_ID,
+      COLLECTION_ID_SAVED_MOVIES,
+      [
+        Query.equal("user_id", userId),
+        Query.equal("movie_id", movieId),
+        Query.limit(1),
+      ]
+    );
+    if (result.documents.length > 0) {
+      await databases.deleteDocument(
+        DATABASE_ID,
+        COLLECTION_ID_SAVED_MOVIES,
+        result.documents[0].$id
+      );
+      return true;
+    }
+    return false;
+  } catch (error) {
+    console.error("Error removing saved movie:", error);
+    throw error;
+  }
+};
